@@ -4,15 +4,79 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="/Resources/knockout-3.2.0.js"></script>
     <script src="/Resources/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/Resources/babylon.js"></script>
+    <script src="/Resources/hand.minified-1.3.8.js"></script>
 
-    <link rel="stylesheet" href="/Resources/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/Resources/bootstrap/css/bootstrap.min.css" />
 
-    <title>Index</title>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+
+    <title>Basic-Scene</title>
 </head>
 <body>
-    <h2>Testing</h2>
-    <p>
-        Bullshit
-    </p>
+    <canvas id="renderCanvas"></canvas>
 </body>
 </html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var canvas = document.getElementById("renderCanvas");
+        var engine = new BABYLON.Engine(canvas, true);
+        var scene = createScene();
+
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+
+        function createScene() {
+
+            var scene = new BABYLON.Scene(engine);
+            //scene.clearColor = new BABYLON.Color3(162, 181, 205);
+
+            var camera = new BABYLON.ArcRotateCamera("Camera", 3 * Math.PI / 2, Math.PI / 8, 50, BABYLON.Vector3.Zero(), scene);
+            //camera.setTarget(BABYLON.Vector3.Zero());
+            camera.attachControl(canvas, false);
+
+            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = .5;
+
+            var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+            var materialSphere1 = new BABYLON.StandardMaterial("texture1", scene);
+            materialSphere1.wireframe = true;
+            sphere.position.y = 1;
+            sphere.material = materialSphere1;
+
+            //var ground = BABYLON.Mesh.CreateGround("ground1", 10, 10, 5, scene);
+            var precision = {
+                "w": 2,
+                "h": 2
+            };
+            var subdivisions = {
+                'h': 8,
+                'w': 8
+            };
+            var tiledGround = BABYLON.Mesh.CreateTiledGround("Tiled Ground", -3, -3, 3, 3, subdivisions, precision, scene, false);
+
+            return scene;
+        };
+    });
+</script>
